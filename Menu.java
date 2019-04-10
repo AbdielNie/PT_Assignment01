@@ -8,14 +8,25 @@ import java.util.Scanner;
 public class Menu
 {
 
-    private Scanner in;
+    /**
+     * the object to get input from console
+     */
+    private Scanner console;
 
+    /**
+     * Constructs a menu instance.
+     */
     public Menu()
     {
-        in = new Scanner(System.in);
+        console = new Scanner(System.in);
     }
 
-    public void display() {
+    /**
+     * Displays the options of the menu.
+     */
+    public void display()
+    {
+        System.out.println();
         System.out.println("*** MiRides System Menu ***");
         System.out.println("Create Car                   CC");
         System.out.println("Book Car                     BC");
@@ -27,19 +38,38 @@ public class Menu
         System.out.println("Exit Program                 EX");
     }
 
+    /**
+     * Gets an option entered by the user.
+     *
+     * @return the option entered by the user
+     */
     public String getOption()
     {
-        String option = in.nextLine();
+        String option = console.nextLine();
 
         return option.toUpperCase();
     }
 
+    /**
+     * Prompts the user to enter a string value.
+     *
+     * @param prompt the prompt message
+     * @return a string value entered by the user.
+     */
     public String enter(String prompt)
     {
         System.out.print(prompt);
-        return in.nextLine();
+        return console.nextLine();
     }
 
+    /**
+     * Prompts the user to enter a valid integer value.
+     *
+     * @param prompt the prompt message
+     * @param min the minimum value of the restriction
+     * @param max the maximum value of the restriction
+     * @return an integer value which is in [min, max]
+     */
     public int enterInteger(String prompt, int min, int max)
     {
         while (true)
@@ -52,14 +82,14 @@ public class Menu
                 if (i < min || i > max)
                 {
                     System.out.printf(
-                            "Error - the entered integer should be in [%d, %d].\n",
-                            min, max);
+                        "Error - the entered integer should be in [%d, %d].\n",
+                        min, max);
                     continue;
                 }
 
                 return i;
             }
-            catch (NumberFormatException ex)
+            catch (NumberFormatException ex)  // invalid value
             {
                 System.out.println(
                         "Error - please enter a valid integer value.");
@@ -67,6 +97,12 @@ public class Menu
         }
     }
 
+    /**
+     * Prompts the user to enter a valid double value.
+     *
+     * @param prompt the prompt message
+     * @return an integer value entered by the user
+     */
     public double enterDouble(String prompt)
     {
         while (true)
@@ -77,7 +113,7 @@ public class Menu
             {
                 return Double.parseDouble(value);
             }
-            catch (NumberFormatException ex)
+            catch (NumberFormatException ex)   // invalid value
             {
                 System.out.println(
                         "Error - please enter a valid double value.");
@@ -85,8 +121,11 @@ public class Menu
         }
     }
 
+    /**
+     * Releases the resource.
+     */
     public void close()
     {
-        in.close();
+        console.close();
     }
 }
