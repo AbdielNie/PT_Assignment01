@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.StringJoiner;
 
 /*
  * Class: Car
@@ -7,25 +7,56 @@ import java.util.*;
  */
 public class Car
 {
-	
     private static final int MAX_BOOKINGS_NUM = 5;
-    // Set Variable
-    private String regNo;
-    private String make;
-    private String model;
-    private String driverName; 
-    private int passengerCapacity;
-    private boolean available;
-    private Booking[] currentBookings;
-    private Booking[] pastBookings;
 
+    /**
+     * the registration number of this car
+     */
+    private String regNo;
+    /**
+     * the make of this car
+     */
+    private String make;
+    /**
+     * the model of this car
+     */
+    private String model;
+    /**
+     * the driver's name of this car
+     */
+    private String driverName;
+    /**
+     * the passenger capacity of this car
+     */
+    private int passengerCapacity;
+    /**
+     * indicate whether this car is available
+     */
+    private boolean available;
+    /**
+     * current bookings of this car
+     */
+    private Booking[] currentBookings;
+    /**
+     * past bookings of this car
+     */
+    private Booking[] pastBookings;
+    /**
+     * the number of current bookings of this car
+     */
     private int numCurrentBookings;
+    /**
+     * the number of past bookings of this car
+     */
     private int numPastBookings;
-    //Constructor
+
+    /**
+     * Constructs a new car instance with given parameters,
+     * the car is available by default.
+     */
     public Car(String regNo, String make, String model,
                String driverName, int passengerCapacity)
     {
-    	//setter
         this.regNo = regNo;
         this.make = make;
         this.model = model;
@@ -41,6 +72,10 @@ public class Car
         available = true;
     }
 
+    /**
+     * Books a car with the customers's first name and last name,
+     * require date and the number of required passengers.
+     */
     public boolean book(String firstName, String lastName,
                         DateTime required, int numPassengers)
     {
@@ -62,7 +97,12 @@ public class Car
         return true;
     }
 
-    public Booking getLatestBooking()
+    /**
+     * Gets the last booking of this car.
+     *
+     * @return the last booking of this car.
+     */
+    public Booking getLastBooking()
     {
         if (numCurrentBookings == 0)
         {
@@ -72,7 +112,12 @@ public class Car
         return currentBookings[numCurrentBookings  - 1];
     }
 
-    public void completeBooking(String id) 
+    /**
+     * Completes a booking in current bookings of this car.
+     *
+     * @param id the id the specified booking
+     */
+    public void completeBooking(String id)
     {
         int index = 0;
 
@@ -100,6 +145,12 @@ public class Car
         numPastBookings++;
     }
 
+    /**
+     * Grow the capacity of the past bookings array if necessary to ensure it's
+     * capacity is larger than the given capacity.
+     *
+     * @param newCapacity the given capacity
+     */
     private void ensurePastBookingCapacity(int newCapacity)
     {
         if (newCapacity >= pastBookings.length)
@@ -112,6 +163,11 @@ public class Car
         }
     }
 
+    /**
+     * Gets the details of this car.
+     *
+     * @return the details of this car
+     */
     public String getDetails()
     {
         String newLine = "\n";
@@ -132,6 +188,11 @@ public class Car
         return details.toString();
     }
 
+    /**
+     * Gets the string value of this car.
+     *
+     * @return the string value of this car.
+     */
     public String toString()
     {
         StringJoiner joiner = new StringJoiner(":");
@@ -146,11 +207,22 @@ public class Car
         return joiner.toString();
     }
 
+    /**
+     * Gets the registration number of this car
+     *
+     * @return the registration number of this car
+     */
     public String getRegNo()
     {
         return regNo;
     }
 
+    /**
+     * Returns true if this car is available on the required date, otherwise false.
+     *
+     * @param required required date
+     * @return true if this car is available on the required date, otherwise false.
+     */
     public boolean isAvailable(DateTime required)
     {
         if (!available)
@@ -174,11 +246,21 @@ public class Car
         return true;
     }
 
+    /**
+     * Gets the driver's name
+     *
+     * @return the driver name
+     */
     public String getDriverName()
     {
         return driverName;
     }
 
+    /**
+     * Gets the passenger capacity of this car
+     *
+     * @return the passenger capacity of this car
+     */
     public int getPassengerCapacity()
     {
         return passengerCapacity;
