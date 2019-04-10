@@ -1,19 +1,35 @@
 /*
  * Class: MiRidesApplication
  * Description: The class is used to for manage all the cars and bookings.
- * Author: LiangyuNie - s3716113
+ * Author: [LiangyuNie] - [s3716113]
  */
 public class MiRidesApplication
 {
-
+    /**
+     * the current cars in this system
+     */
     private Car[] cars;
+    /**
+     * the bookings associated with those cars in this system
+     */
     private Booking[] bookings;
 
+    /**
+     * the number of cars in this system
+     */
     private int numCars;
+    /**
+     * the number of bookings in this system
+     */
     private int numBookings;
-
+    /**
+     * the menu of this system
+     */
     private Menu menu;
 
+    /**
+     * Constructs the application.
+     */
     public MiRidesApplication()
     {
         cars = new Car[5];
@@ -25,6 +41,9 @@ public class MiRidesApplication
         menu = new Menu();
     }
 
+    /**
+     * Starts the application.
+     */
     public void start()
     {
         while (true)
@@ -75,14 +94,18 @@ public class MiRidesApplication
                     break;
 
                 default:
-                    System.out.println("Error - Invalid option.\n");
+                    System.out.println("Error - Invalid option.");
                     break;
             }
         }
 
+        // close the menu
         menu.close();
     }
 
+    /**
+     * Creates a car.
+     */
     private void createCar()
     {
         Car newCar = enterCar();
@@ -91,11 +114,16 @@ public class MiRidesApplication
         {
             addCar(newCar);
             System.out.printf(
-                "New Car added successfully for registration number: %s.\n\n",
+                "New Car added successfully for registration number: %s.\n",
                 newCar.getRegNo());
         }
     }
 
+    /**
+     * Adds a new car to this system.
+     *
+     * @param newCar a given car
+     */
     private void addCar(Car newCar)
     {
         ensureCarArrayCapacity(numCars + 1);
@@ -104,6 +132,11 @@ public class MiRidesApplication
         numCars++;
     }
 
+    /**
+     * Enters a car by the user.
+     *
+     * @return a car entered by the user
+     */
     private Car enterCar()
     {
         String regNo = menu.enter("Enter Registration No:       ");
@@ -119,13 +152,13 @@ public class MiRidesApplication
                 || !Character.isDigit(regNo.charAt(4))
                 || !Character.isDigit(regNo.charAt(5)))
         {
-            System.out.println("Error - Registration number is invalid.\n");
+            System.out.println("Error - Registration number is invalid.");
             return null;
         }
 
         if (containsCar(regNo))
         {
-            System.out.println("Error - Already exists in the system.\n");
+            System.out.println("Error - Already exists in the system.");
             return null;
         }
 
@@ -140,7 +173,7 @@ public class MiRidesApplication
         {
             System.out.println(
                     "Error - The make, model and driver name must " +
-                    "handle being able to have multiple words.\n");
+                    "handle being able to have multiple words.");
             return null;
         }
 
@@ -151,6 +184,12 @@ public class MiRidesApplication
         return new Car(regNo, make, model, driverName, passengerCapacity);
     }
 
+    /**
+     * Returns true if current system contains the given car, otherwise false.
+     *
+     * @param regNo the registration number of the given car
+     * @return true if current system contains the given car, otherwise false
+     */
     private boolean containsCar(String regNo)
     {
         for (int i = 0; i < numCars; i++)
@@ -166,6 +205,9 @@ public class MiRidesApplication
         return false;
     }
 
+    /**
+     * Books a car
+     */
     private void bookCar()
     {
         Booking newBooking = enterBooking();
@@ -179,35 +221,30 @@ public class MiRidesApplication
                 newBooking.getPickUpDateTime().getFormattedDate());
 
             System.out.printf(
-                    "Your booking reference is: %s.\n\n", newBooking.getId());
+                    "Your booking reference is: %s.\n", newBooking.getId());
         }
     }
 
-    private void addBooking(Booking newBooking)
-    {
-        Car bookingCar = newBooking.getCar();
-        DateTime pickUpDateTime = newBooking.getPickUpDateTime();
-        String firstName = newBooking.getFirstName();
-        String lastName = newBooking.getLastName();
-
-        String bookingId = bookingCar.getRegNo() + "_"
-                + firstName.substring(0, 3).toUpperCase()
-                + lastName.substring(0, 3).toUpperCase() + "_"
-                + pickUpDateTime.getEightDigitDate();
-
-        newBooking.setId(bookingId);
-        newBooking.setBookingFee(1.5);
-
-        ensureBookingArrayCapacity(numBookings + 1);
-        bookings[numBookings] = newBooking;
-        numBookings++;
-    }
-
+    /**
+     * Enters a booking by the user.
+     *
+     * @return a booking entered by the user.
+     */
     private Booking enterBooking()
     {
-        String dateStr   = menu.enter("Enter Date Required:         ");
+        String dateStr = menu.enter("Enter Date Required:         ");
 
-        DateTime required = parseDate(dateStr);
+        DateTime required;
+        try
+        {
+            required = parseDate(dateStr);
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Error - Please enter a valid date.");
+            return null;
+        }
+
         DateTime now = new DateTime();
 
         int days = DateTime.diffDays(required, now);
@@ -215,14 +252,14 @@ public class MiRidesApplication
         // or more than one week in the future.
         if (days < 0 || days > 7)
         {
-            System.out.println("Error - No cars are available on this date.\n");
+            System.out.println("Error - No cars are available on this date.");
             return null;
         }
 
         Car[] availableCars = searchAvailableCars(required);
         if (availableCars.length == 0)
         {
-            System.out.println("Error - No cars are available on this date.\n");
+            System.out.println("Error - No cars are available on this date.");
             return null;
         }
 
@@ -233,8 +270,8 @@ public class MiRidesApplication
         }
 
         int bookingIndex = menu.enterInteger(
-        "Please select the number next to the car you wish to book: ",
-        1, availableCars.length);
+                "Please select the number next to the car you wish to book: ",
+                1, availableCars.length);
         Car bookingCar = availableCars[bookingIndex - 1];
 
         String firstName = menu.enter("Enter First Name:            ");
@@ -253,20 +290,54 @@ public class MiRidesApplication
                 "Enter Number of Passengers:   ", 1, 9);
         if (numPassengers > bookingCar.getPassengerCapacity()) {
             System.out.println(
-                "Error - The passenger capacity of this car is not enough.\n");
+                    "Error - The passenger capacity of this car is not enough.");
             return null;
         }
 
+        // try to book the car
         boolean bookingResult =
                 bookingCar.book(firstName, lastName, required, numPassengers);
-        if (bookingResult)
+        if (bookingResult)  // book successfully
         {
-            return bookingCar.getLatestBooking();
+            return bookingCar.getLastBooking();
         }
 
         return null;
     }
 
+    /**
+     * Adds a booking to this system.
+     *
+     * @param newBooking a given booking
+     */
+    private void addBooking(Booking newBooking)
+    {
+        Car bookingCar = newBooking.getCar();
+        DateTime pickUpDateTime = newBooking.getPickUpDateTime();
+        String firstName = newBooking.getFirstName();
+        String lastName = newBooking.getLastName();
+
+        // generates the id of the booking object
+        String bookingId = bookingCar.getRegNo() + "_"
+                + firstName.substring(0, 3).toUpperCase()
+                + lastName.substring(0, 3).toUpperCase() + "_"
+                + pickUpDateTime.getEightDigitDate();
+
+        newBooking.setId(bookingId);
+        newBooking.setBookingFee(1.5);
+
+        ensureBookingArrayCapacity(numBookings + 1);
+        bookings[numBookings] = newBooking;
+        numBookings++;
+    }
+
+    /**
+     * Searchers in the cars in this system to find out all the cars met
+     * the required date.
+     *
+     * @param required the required date
+     * @return the cars met the required date in this system
+     */
     private Car[] searchAvailableCars(DateTime required)
     {
         int numAvailableCars = 0;
@@ -291,6 +362,12 @@ public class MiRidesApplication
         return availableCars;
     }
 
+    /**
+     * Parses a String value to a DateTime value.
+     *
+     * @param dateStr a given String value
+     * @return a DateTime value
+     */
     private DateTime parseDate(String dateStr)
     {
         String[] dateInfo = dateStr.split("/");
@@ -301,6 +378,12 @@ public class MiRidesApplication
         return new DateTime(day, month, year);
     }
 
+    /**
+     * Grow the capacity of the cars array if necessary to ensure it's
+     * capacity is larger than the given capacity.
+     *
+     * @param newCapacity the given capacity
+     */
     private void ensureCarArrayCapacity(int newCapacity)
     {
         if (newCapacity >= cars.length)
@@ -312,6 +395,12 @@ public class MiRidesApplication
         }
     }
 
+    /**
+     * Grow the capacity of the bookings array if necessary to ensure it's
+     * capacity is larger than the given capacity.
+     *
+     * @param newCapacity the given capacity
+     */
     private void ensureBookingArrayCapacity(int newCapacity)
     {
         if (newCapacity >= bookings.length)
@@ -323,7 +412,11 @@ public class MiRidesApplication
         }
     }
 
-    private void completeBooking() {
+    /**
+     * Completes an entered booking.
+     */
+    private void completeBooking()
+    {
         String bookingInfo   = menu.enter(
                 "Enter Registration or Booking Date: ");
         String firstName     = menu.enter("Enter first name:  ");
@@ -349,7 +442,7 @@ public class MiRidesApplication
 
         if (booking == null)
         {
-            System.out.println("Error - The booking could not be located.\n");
+            System.out.println("Error - The booking could not be located.");
             return;
         }
 
@@ -361,10 +454,16 @@ public class MiRidesApplication
                 "Thank you for riding with MiRide. " +
                 "We hope you enjoyed your trip.");
 
-        System.out.printf("$%.2f has been deducted from your account.\n\n",
+        System.out.printf("$%.2f has been deducted from your account.\n",
                 booking.getBookingFee() + booking.getTripFee());
     }
 
+    /**
+     * Completes a specified booking with it's travelled distance in kilometers.
+     *
+     * @param booking a specified booking
+     * @param kilometersTravelled travelled distance in kilometers
+     */
     private void completeBooking(Booking booking, double kilometersTravelled)
     {
         booking.setKilometersTravelled(kilometersTravelled);
@@ -374,6 +473,9 @@ public class MiRidesApplication
         bookingCar.completeBooking(booking.getId());
     }
 
+    /**
+     * Searches a specified car by a given registration number.
+     */
     private void searchSpecialCar()
     {
         String regNo = menu.enter("Enter Registration No:    ");
@@ -394,18 +496,22 @@ public class MiRidesApplication
             }
         }
 
+        // not found the specified car
         if (!found)
         {
-            System.out.println("Error - The car could not be located.\n");
+            System.out.println("Error - The car could not be located.");
         }
     }
 
+    /**
+     * Displays all cars' details.
+     */
     private void displayAllCars()
     {
         if (numCars == 0)
         {
             System.out.println(
-                    "There are no cars currently in the system yet.\n");
+                    "There are no cars currently in the system yet.");
             return;
         }
 
@@ -417,11 +523,25 @@ public class MiRidesApplication
         }
     }
 
+    /**
+     * Searches all cars in this system to find out the cars which are
+     * available on the required date.
+     */
     private void searchAvailableCars()
     {
-        String dateStr   = menu.enter("Enter Date Required:         ");
+        String dateStr = menu.enter("Enter Date Required:         ");
 
-        DateTime required = parseDate(dateStr);
+        DateTime required;
+        try
+        {
+            required = parseDate(dateStr);
+        }
+        catch (Exception ex)
+        {
+            System.out.println("Error - Please enter a valid date.");
+            return;
+        }
+
         DateTime now = new DateTime();
         int days = DateTime.diffDays(required, now);
 
@@ -443,16 +563,20 @@ public class MiRidesApplication
         }
     }
 
+    /**
+     * Pre-populates the system with a range of cars and booking objects.
+     */
     private void seedData()
     {
         // the collection of cars already have data
         if (numCars != 0)
         {
             System.out.println(
-                    "Error - The collection of cars already have data.\n");
+                    "Error - The collection of cars already have data.");
             return;
         }
 
+        // initializes 6 hard coded cars
         Car[] seedCars =
             {
                 new Car("ABC123", "Make1",
@@ -477,35 +601,38 @@ public class MiRidesApplication
         // Two cars that HAVE BEEN been booked,
         // but the bookings have not been completed
         cars[0].book("Alice", "Moore", new DateTime(), 2);
-        Booking car0Booking = cars[0].getLatestBooking();
+        Booking car0Booking = cars[0].getLastBooking();
         addBooking(car0Booking);
 
         cars[1].book("Emma", "Davis", new DateTime(), 4);
-        Booking car1Booking = cars[1].getLatestBooking();
+        Booking car1Booking = cars[1].getLastBooking();
         addBooking(car1Booking);
 
         // Two cars that HAVE BEEN booked,
         // and the bookings have been completed
         cars[2].book("Kate", "Young", new DateTime(), 2);
-        Booking car2Booking = cars[2].getLatestBooking();
+        Booking car2Booking = cars[2].getLastBooking();
         addBooking(car2Booking);
         completeBooking(car2Booking, 43);
 
 
         cars[3].book("Denny", "Larry", new DateTime(), 4);
-        Booking car3Booking = cars[3].getLatestBooking();
+        Booking car3Booking = cars[3].getLastBooking();
         addBooking(car3Booking);
         completeBooking(car3Booking, 100);
 
-        System.out.println("Seed Data successfully.\n");
+        System.out.println("Seed Data successfully.");
     }
 
+    /**
+     * Displays all bookings' details.
+     */
     private void displayAllBookings()
     {
         if (numBookings == 0)
         {
             System.out.println(
-                    "There are no bookings currently in the system yet.\n");
+                    "There are no bookings currently in the system yet.");
             return;
         }
 
@@ -517,6 +644,11 @@ public class MiRidesApplication
         }
     }
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments of the main method.
+     */
     public static void main(String[] args)
     {
         MiRidesApplication app = new MiRidesApplication();
